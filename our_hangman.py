@@ -261,28 +261,31 @@ def create_word_list(filepath="./countries-and-capitals.txt"):
     return word_list_local
 
 
-def draw_word_from_list(word_list, level_local):
+def draw_word_from_list(word_list, level_local, played_words_local: set):
     random.seed()
     word_number = random.randint(0, len(word_list) - 1)
     word = word_list[word_number]
-
     if level_local == 1:
-        while len(word) > 5:
+        while not(len(word) <= 5) or word in played_words_local:
             word_number = random.randint(0, len(word_list) - 1)
             word = word_list[word_number]
         return word
 
     elif level_local == 2:
-        while len(word) <= 5 or len(word) > 8:
+        while not(5 < len(word) <= 8) or word in played_words_local:
             word_number = random.randint(0, len(word_list) - 1)
             word = word_list[word_number]
         return word
 
-    else:
-        while len(word) <= 8:
+    elif level_local == 3:
+        while not(len(word) > 8) or word in played_words_local:
             word_number = random.randint(0, len(word_list) - 1)
             word = word_list[word_number]
         return word
+    else:
+        # TODO: handle case
+        raise ValueError
+        pass
 
 
 def validate_input():
@@ -332,23 +335,27 @@ def input_check_play_again(decision_local=""):
 
     In: str, default = ''
     Out: str decision that  is either 'Y', 'y', 'N', 'n'"""
-    while decision_local.lower() != "y" and decision_local != "n":
+    while decision_local.lower() != "y" and decision_local.lower() != "n":
         decision_local = input("I didn't get it! Would you like to play? Yes or no? (y/n) ")
         if decision_local.upper().lower() == "quit":
             goodbye()
     return decision_local.lower()
 
 
-def main(game_round, player_name=""):
+def main(game_round, player_name="", played_words=None):
+    if played_words is None:
+        played_words = set()
     if game_round == 'first':
         player_name = greet_player()
     elif game_round == 'next':
         welcome_back(player_name, 1)
     elif game_round == 'fail':
         welcome_back(player_name, 0)
+
     level = get_level()
     word_base = create_word_list()
-    word_to_guess = draw_word_from_list(word_base, level)
+    word_to_guess = draw_word_from_list(word_base, level, played_words)
+    played_words.add(word_to_guess)
     original_word = word_to_guess
     encoded_word = re.sub('[0-9a-zA-Z]', '_', word_to_guess)
     # print(word_to_guess)  # Print selected word
@@ -386,9 +393,10 @@ def main(game_round, player_name=""):
             decision = input_check_play_again(decision)
             try:
                 if decision.lower() == "y":
-                    main("fail", player_name)
+                    main("fail", player_name, played_words)
                 elif decision.lower() == 'n':
                     print("I hope you enjoyed the game! See you next time!")
+                    goodbye()
                 else:
                     raise ValueError
             except ValueError:
@@ -396,14 +404,13 @@ def main(game_round, player_name=""):
         else:
             leaderboards(player_name, wrong_guesses, level)
             decision = input("Congratulations, you've won the game! Do you want to try again? (y/n) ")
-            if decision.upper().lower() == "quit":
-                goodbye()
             decision = input_check_play_again(decision)
             try:
                 if decision.lower() == "y":
-                    main("next", player_name)
+                    main("next", player_name, played_words)
                 elif decision.lower() == 'n':
                     print("Thank you for your time. See you in the next one!")
+                    goodbye()
                 else:
                     raise ValueError
             except ValueError:
