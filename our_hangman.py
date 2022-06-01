@@ -300,7 +300,7 @@ def validate_input():
     return guess
 
 
-def guess_letter(word, encoded_word, level_local, wrong_guesses, guess_counter, already_tried_letters_local: set):
+def guess_letter(word, encoded_word, level_local, wrong_guesses, guess_counter, already_tried_letters_local: set, lifes_left):
     guess = validate_input()
     while guess.upper() in already_tried_letters_local or guess.upper() in encoded_word.upper():
         print(BColors.OKCYAN + "You've already provided that character. " + BColors.ENDC)
@@ -316,7 +316,8 @@ def guess_letter(word, encoded_word, level_local, wrong_guesses, guess_counter, 
     if guess_counter == 0 and guess.upper() not in already_tried_letters_local:
         already_tried_letters_local.add(guess.upper())
         wrong_guesses = wrong_guesses + damage(level_local)
-    return wrong_guesses, encoded_word, already_tried_letters_local
+        lifes_left = lifes_left - 1
+    return wrong_guesses, encoded_word, already_tried_letters_local, lifes_left
 
 
 def get_hangman(max_wrong_guesses, graphics_list):
@@ -357,12 +358,13 @@ def main(game_round, player_name=""):
     max_wrong_guesses = 42  # Must be every 3
     wrong_guesses = 0  # Starting value
     guess_counter = 0  # Starting value for loop
+    lifes_left = int(max_wrong_guesses / damage(level))
 
     # =================================== MAIN GAME LOGIC ============================================
     while wrong_guesses < max_wrong_guesses and "_" in encoded_word:
         # TODO: introduce exception handling, e.g. if game_state_tuple doesn't get the return values assigned correctly
         game_state_tuple = guess_letter(word_to_guess, encoded_word, level, wrong_guesses, guess_counter,
-                                        already_tried_letters)
+                                        already_tried_letters, lifes_left)
         wrong_guesses = game_state_tuple[0]
         encoded_word = game_state_tuple[1]
         already_tried_letters = game_state_tuple[2]
@@ -373,8 +375,8 @@ def main(game_round, player_name=""):
             print(BColors.WARNING + i, " " + BColors.ENDC, end="")
         print(" ")
         # Print encoded word
-        print(BColors.BOLD + encoded_word + BColors.ENDC, BColors.FAIL + "\tyour damage: ", str(wrong_guesses) + "/" +
-              str(max_wrong_guesses) + BColors.ENDC)
+        lifes_left = game_state_tuple[3]
+        print(BColors.BOLD + encoded_word + BColors.ENDC, BColors.FAIL + "\tlifes left: ", str(lifes_left) + BColors.ENDC)
     else:
         if wrong_guesses >= max_wrong_guesses:
             decision = input("So sorry, you've failed! The word was %s. Do you want to play again? (y/n) "
