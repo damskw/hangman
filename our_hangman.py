@@ -132,21 +132,16 @@ def goodbye():
     exit()
 
 
-def leaderbords(player_name, wrong_guesses, difficulty_level):
-
+def leaderboards(player_name, wrong_guesses, difficulty_level):
     # Save to file
-
     score = str((42 - wrong_guesses) * difficulty_level)
     line = "\n" + player_name + " " + score + " "
-    with open("leaderbords.txt", "a") as f:
+    with open("leaderboards.txt", "a") as f:
         f.write(line)
 
-    # End of save to file
-
     # Reading from file
-
     list = []
-    with open("leaderbords.txt", "r") as f:
+    with open("leaderboards.txt", "r") as f:
         for line in f:
             current_line = []
             current_word = ""
@@ -157,18 +152,13 @@ def leaderbords(player_name, wrong_guesses, difficulty_level):
                     current_line.append(current_word)
                     current_word = ""
             list.append(current_line)
-    print(list)
-    # End of reading from file
+    #print(list)
 
-    # Tittle screen
-
-    tittle_screen = pyfiglet.figlet_format("HALL OF FAME")
-    slowprint(BColors.OKGREEN + tittle_screen + BColors.ENDC, 0.01)
-
-    # End of tittle screen
+    # Title screen
+    title_screen = pyfiglet.figlet_format("HALL OF FAME")
+    slowprint(BColors.OKGREEN + title_screen + BColors.ENDC, 0.01)
 
     # Sorting algorythm
-
     indexing_length = len(list) - 1
     sorted = False
 
@@ -178,26 +168,22 @@ def leaderbords(player_name, wrong_guesses, difficulty_level):
             if int(list[i][1]) < int(list[i + 1][1]):
                 sorted = False
                 list[i], list[i + 1] = list[i + 1], list[i]
-    # End of sorting algorythm
 
     # Current player score
-    random_word_of_encouragement = ["Jesteś świetny", "Poszło ci znakomicie", "Aż sam nie wierzę że dało się tyle punktów zdobyć"
-                                    , "Jesteś profesionalistą", "Nieźle, ja bym tyle nigdy nie zdobył!"]
-    print("Brawo", player_name, "Udało ci się zdobyć:", score,"Punktów", random_word_of_encouragement[random.randint(0, 3)])
-    #clear()
-    # End of Current player score
-
+    words_of_encouragement = ["You're great!", "You did very well.", "Unbeliveable how many points you've gotten!"
+                                    , "Looks like you're a professional.", "Well done, not many players score that high."]
+    random_word_of_encouragement = words_of_encouragement[random.randint(0,3)]
+    print(f"Congratulations, {player_name}! You've managed to get: {score} points! {random_word_of_encouragement}")
 
     # List of winners
-
     counter = 0
     itteration = 0
     for i in list:
         counter += 1
-        print(counter ,". " , list[itteration][0] , " " , list[itteration][1] , " " , " PKT")
+        highscore_show_player_name = list[itteration][0]
+        highscore_show_points = list[itteration][1]
+        print(f"{counter}. {highscore_show_player_name} {highscore_show_points} points")
         itteration += 1
-
-    # End of list of winners
 
 
 def welcome_back(player_name, is_win):
@@ -406,7 +392,7 @@ def main(game_round, player_name=""):
             except ValueError:
                 input_check_play_again()
         else:
-            leaderbords(player_name, wrong_guesses, level)
+            leaderboards(player_name, wrong_guesses, level)
             decision = input("Congratulations, you've won the game! Do you want to try again? (y/n) ")
             if decision.upper().lower() == "quit":
                 goodbye()
