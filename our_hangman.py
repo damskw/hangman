@@ -372,7 +372,7 @@ def main(game_round, player_name="", played_words=None):
     max_wrong_guesses = 42  # Must be every 3
     wrong_guesses = 0  # Starting value
     guess_counter = 0  # Starting value for loop
-    lives_left = int(max_wrong_guesses / damage(level))
+    lives_left = int(max_wrong_guesses / damage(level)) # Starting value for lives left
 
     # =================================== MAIN GAME LOGIC ============================================
     while wrong_guesses < max_wrong_guesses and "_" in encoded_word:
@@ -390,7 +390,7 @@ def main(game_round, player_name="", played_words=None):
         print(" ")
         # Print encoded word
         lives_left = game_state_tuple[3]
-        print(BColors.BOLD + encoded_word + BColors.ENDC, BColors.FAIL + "\tlifes left: ", str(lives_left) +
+        print(BColors.BOLD + encoded_word + BColors.ENDC, BColors.FAIL + "\tlives left: ", str(lives_left) +
               BColors.ENDC)
     else:
         if wrong_guesses >= max_wrong_guesses:
