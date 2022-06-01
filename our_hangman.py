@@ -140,7 +140,7 @@ def leaderboards(player_name, wrong_guesses, difficulty_level):
         f.write(line)
 
     # Reading from file
-    list = []
+    leader_list_to_sort = []
     with open("leaderboards.txt", "r") as f:
         for line in f:
             current_line = []
@@ -151,39 +151,45 @@ def leaderboards(player_name, wrong_guesses, difficulty_level):
                 else:
                     current_line.append(current_word)
                     current_word = ""
-            list.append(current_line)
-    #print(list)
+            leader_list_to_sort.append(current_line)
+    # print(list)
 
     # Title screen
     title_screen = pyfiglet.figlet_format("HALL OF FAME")
     slowprint(BColors.OKGREEN + title_screen + BColors.ENDC, 0.01)
 
-    # Sorting algorythm
-    indexing_length = len(list) - 1
-    sorted = False
+    # Sorting algorithm
+    indexing_length = len(leader_list_to_sort) - 1
+    is_sorted = False
 
-    while not sorted:
-        sorted = True
+    while not is_sorted:
+        is_sorted = True
         for i in range(0, indexing_length):
-            if int(list[i][1]) < int(list[i + 1][1]):
-                sorted = False
-                list[i], list[i + 1] = list[i + 1], list[i]
+            if int(leader_list_to_sort[i][1]) < int(leader_list_to_sort[i + 1][1]):
+                is_sorted = False
+                leader_list_to_sort[i], leader_list_to_sort[i + 1] = leader_list_to_sort[i + 1], leader_list_to_sort[i]
 
     # Current player score
-    words_of_encouragement = ["You're great!", "You did very well.", "Unbeliveable how many points you've gotten!"
-                                    , "Looks like you're a professional.", "Well done, not many players score that high."]
-    random_word_of_encouragement = words_of_encouragement[random.randint(0,3)]
+    words_of_encouragement = ["You're great!",
+                              "You did very well.",
+                              "Unbelievable how many points you've gotten!",
+                              "Looks like you're a professional.",
+                              "Well done, not many players score that high."]
+    random_word_of_encouragement = words_of_encouragement[random.randint(0, 3)]
     print(f"Congratulations, {player_name}! You've managed to get: {score} points! {random_word_of_encouragement}")
 
     # List of winners
     counter = 0
-    itteration = 0
-    for i in list:
+    # TODO: make use of iterator `line` in this for loop, delete comments if this piece works well
+    # iteration = 0
+    for line in leader_list_to_sort:
         counter += 1
-        highscore_show_player_name = list[itteration][0]
-        highscore_show_points = list[itteration][1]
+        # highscore_show_player_name = leader_list_to_sort[iteration][0]
+        highscore_show_player_name = line[0]
+        # highscore_show_points = leader_list_to_sort[iteration][1]
+        highscore_show_points = line[1]
         print(f"{counter}. {highscore_show_player_name} {highscore_show_points} points")
-        itteration += 1
+        # iteration += 1
 
 
 def welcome_back(player_name, is_win):
@@ -303,7 +309,8 @@ def validate_input():
     return guess
 
 
-def guess_letter(word, encoded_word, level_local, wrong_guesses, guess_counter, already_tried_letters_local: set, lifes_left):
+def guess_letter(word, encoded_word, level_local, wrong_guesses, guess_counter, already_tried_letters_local: set,
+                 lives_left_local):
     guess = validate_input()
     while guess.upper() in already_tried_letters_local or guess.upper() in encoded_word.upper():
         print(BColors.OKCYAN + "You've already provided that character. " + BColors.ENDC)
@@ -319,8 +326,8 @@ def guess_letter(word, encoded_word, level_local, wrong_guesses, guess_counter, 
     if guess_counter == 0 and guess.upper() not in already_tried_letters_local:
         already_tried_letters_local.add(guess.upper())
         wrong_guesses = wrong_guesses + damage(level_local)
-        lifes_left = lifes_left - 1
-    return wrong_guesses, encoded_word, already_tried_letters_local, lifes_left
+        lives_left_local = lives_left_local - 1
+    return wrong_guesses, encoded_word, already_tried_letters_local, lives_left_local
 
 
 def get_hangman(max_wrong_guesses, graphics_list):
@@ -365,13 +372,13 @@ def main(game_round, player_name="", played_words=None):
     max_wrong_guesses = 42  # Must be every 3
     wrong_guesses = 0  # Starting value
     guess_counter = 0  # Starting value for loop
-    lifes_left = int(max_wrong_guesses / damage(level))
+    lives_left = int(max_wrong_guesses / damage(level))
 
     # =================================== MAIN GAME LOGIC ============================================
     while wrong_guesses < max_wrong_guesses and "_" in encoded_word:
         # TODO: introduce exception handling, e.g. if game_state_tuple doesn't get the return values assigned correctly
         game_state_tuple = guess_letter(word_to_guess, encoded_word, level, wrong_guesses, guess_counter,
-                                        already_tried_letters, lifes_left)
+                                        already_tried_letters, lives_left)
         wrong_guesses = game_state_tuple[0]
         encoded_word = game_state_tuple[1]
         already_tried_letters = game_state_tuple[2]
@@ -382,8 +389,9 @@ def main(game_round, player_name="", played_words=None):
             print(BColors.WARNING + i, " " + BColors.ENDC, end="")
         print(" ")
         # Print encoded word
-        lifes_left = game_state_tuple[3]
-        print(BColors.BOLD + encoded_word + BColors.ENDC, BColors.FAIL + "\tlifes left: ", str(lifes_left) + BColors.ENDC)
+        lives_left = game_state_tuple[3]
+        print(BColors.BOLD + encoded_word + BColors.ENDC, BColors.FAIL + "\tlifes left: ", str(lives_left) +
+              BColors.ENDC)
     else:
         if wrong_guesses >= max_wrong_guesses:
             decision = input("So sorry, you've failed! The word was %s. Do you want to play again? (y/n) "
