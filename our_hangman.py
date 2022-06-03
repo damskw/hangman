@@ -152,7 +152,6 @@ def leaderboards(player_name, wrong_guesses, difficulty_level):
                     current_line.append(current_word)
                     current_word = ""
             leader_list_to_sort.append(current_line)
-    # print(list)
 
     # Title screen
     title_screen = pyfiglet.figlet_format("HALL OF FAME")
@@ -169,7 +168,6 @@ def leaderboards(player_name, wrong_guesses, difficulty_level):
                 is_sorted = False
                 leader_list_to_sort[i], leader_list_to_sort[i + 1] = leader_list_to_sort[i + 1], leader_list_to_sort[i]
 
-    # Current player score
     words_of_encouragement = ["You're great!",
                               "You did very well.",
                               "Unbelievable how many points you've gotten!",
@@ -177,19 +175,13 @@ def leaderboards(player_name, wrong_guesses, difficulty_level):
                               "Well done, not many players score that high."]
     random_word_of_encouragement = words_of_encouragement[random.randint(0, 3)]
     print(f"Congratulations, {player_name}! You've managed to get: {score} points! {random_word_of_encouragement}")
-
-    # List of winners
+    # Show leaderboard
     counter = 0
-    # TODO: make use of iterator `line` in this for loop, delete comments if this piece works well
-    # iteration = 0
     for line in leader_list_to_sort:
         counter += 1
-        # highscore_show_player_name = leader_list_to_sort[iteration][0]
         highscore_show_player_name = line[0]
-        # highscore_show_points = leader_list_to_sort[iteration][1]
         highscore_show_points = line[1]
         print(f"{counter}. {highscore_show_player_name} {highscore_show_points} points")
-        # iteration += 1
 
 
 def welcome_back(player_name, is_win):
@@ -289,7 +281,6 @@ def draw_word_from_list(word_list, level_local, played_words_local: set):
             word = word_list[word_number]
         return word
     else:
-        # TODO: handle case
         raise ValueError
         pass
 
@@ -365,7 +356,7 @@ def main(game_round, player_name="", played_words=None):
     played_words.add(word_to_guess)
     original_word = word_to_guess
     encoded_word = re.sub('[0-9a-zA-Z]', '_', word_to_guess)
-    # print(word_to_guess)  # Print selected word
+    # DEBUG: print(word_to_guess)  # Print selected word
     print(HANGMAN[0])  # Starting Hangman
     print(encoded_word)  # Print word with _
     already_tried_letters = set()
@@ -376,7 +367,6 @@ def main(game_round, player_name="", played_words=None):
 
     # =================================== MAIN GAME LOGIC ============================================
     while wrong_guesses < max_wrong_guesses and "_" in encoded_word:
-        # TODO: introduce exception handling, e.g. if game_state_tuple doesn't get the return values assigned correctly
         game_state_tuple = guess_letter(word_to_guess, encoded_word, level, wrong_guesses, guess_counter,
                                         already_tried_letters, lives_left)
         wrong_guesses = game_state_tuple[0]
