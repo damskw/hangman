@@ -222,6 +222,7 @@ def get_level(level=""):
             if level.upper().lower() == "quit":
                 goodbye()
             level = int(level)
+            
         except ValueError:
             print("Please enter a valid character. ")
             continue
