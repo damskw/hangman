@@ -226,7 +226,7 @@ def get_level(level=""):
             print("Please enter a valid character. ")
             continue
         while level > 3 or level <= 0:
-            level = input("You have chosen wrong level, try again. ")
+            level = int(input("You have chosen wrong level, try again. "))
             continue
         break
 
